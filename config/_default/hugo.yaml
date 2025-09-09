@@ -19,7 +19,7 @@ cascade:
     editable: true
     hide_date: false
     show_date_updated: true
-    reading_time: true
+    reading_time: false
     commentable: true
     show_related: true
     share: true
@@ -28,6 +28,13 @@ cascade:
     header:
       navbar:
         enable: true
+
+cascade:
+  - _target:
+      path: /**
+    share: false
+    profile: false
+    reading_time: false
 
 ############################
 ## LANGUAGE

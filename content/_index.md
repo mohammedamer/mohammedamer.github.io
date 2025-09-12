@@ -9,7 +9,7 @@ sections:
       username: admin
     design:
       spacing:
-        padding: [0, 0, 0, 0]
+        padding: ["20px", "20px", "20px", "20px"]
       biography:
         style: 'text-align: justify; font-size: 0.8em;'
       # Avatar customization

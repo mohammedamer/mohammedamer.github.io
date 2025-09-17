@@ -28,6 +28,7 @@ jobs:
           path: ./public
   # Deploy website to GitHub Pages hosting
   deploy:
+    needs: build
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
       pages: write # to deploy to Pages

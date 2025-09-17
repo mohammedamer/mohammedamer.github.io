@@ -24,8 +24,8 @@ jobs:
         run: bundle exec appraisal jekyll build --future --config _config_ci.yml,_config.yml
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./public
+        # with:
+        #   path: ./public
   # Deploy website to GitHub Pages hosting
   deploy:
     needs: build

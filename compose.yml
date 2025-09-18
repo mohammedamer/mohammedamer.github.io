@@ -1,0 +1,8 @@
+services:
+  marimo:
+    build: .
+    command: marimo edit --host 0.0.0.0 --port 2718
+    ports:
+      - "2718:2718"
+    volumes:
+      - .:/app/src

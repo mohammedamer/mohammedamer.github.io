@@ -3,6 +3,7 @@ FROM ubuntu:24.04
 LABEL MAINTAINER="Mohammed E. Amer <mohammed.amer@fujitsu.com>"
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+RUN apt update && apt install -y ffmpeg
 
 # Download the latest installer
 ADD https://astral.sh/uv/install.sh /uv-installer.sh

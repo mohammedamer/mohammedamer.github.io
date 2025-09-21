@@ -50,7 +50,12 @@ def _(mo):
     x = A\cos(\omega t+\phi)
     $$
 
-    where $A$ and $\phi$ are amplitude and phase, respectively, which are constants that can be determined by initial conditions.
+    where $A$ and $\phi$ are amplitude and phase, respectively, which are constants that can be determined by initial conditions. The velocity and acceleration can be determined by differentiating the position equation:
+
+    $$
+    v = -A\omega\sin(\omega t+\phi)\\
+    a = -A\omega^2\cos(\omega t + \phi)
+    $$
 
     What this looks like:
     """
@@ -63,35 +68,77 @@ def _():
     from IPython.display import HTML
     import numpy as np
     import matplotlib.pyplot as plt
+    import matplotlib.patches as patches
     from celluloid import Camera
-    return Camera, np, plt
+    return Camera, np, patches, plt
 
 
 @app.cell
-def _(Camera, ROOT, mo, np, plt):
+def _(Camera, ROOT, mo, np, patches, plt):
     def spring1d():
 
         omega = 1 # rad/sec
         A = 0.1 # m
 
-        T = 10
+        T = 1/omega*2*np.pi
 
         t = np.linspace(0, T, 100)
         x = A*np.cos(omega*t)
+        v = -A*omega*np.sin(omega*t)
+        a = -A*omega**2*np.cos(omega*t)
 
-        fig = plt.figure()
-        ax = plt.subplot()
+        fig, (ax_mass, ax_graph) = plt.subplots(1, 2, figsize=(12,5))
 
-        ax.set_xlabel("t")
-        ax.set_ylabel("x")
+        ax_graph.set_xlabel("t")
 
-        ax.set_xlim((0, T))
-        ax.set_ylim((-0.2,0.2))
+        ax_graph.set_xlim((0, T))
+        ax_graph.set_ylim((-0.2,0.2))
 
+        xmin = -0.2
+        xmax = 0.2
+        ymin = -0.1
+        ymax = 1.0
+    
+        ax_mass.set_xlim((xmin, xmax))
+        ax_mass.set_ylim((ymin, ymax))
+        ax_mass.set_yticks([])
+
+        mass_width = 0.08
+        mass_height = 0.2
+
+        wall_x = -0.19
+    
         camera = Camera(fig)
+
         for idx, ti in enumerate(t):
-            ax.plot(t[:idx+1], x[:idx+1], color="royalblue")
-            ax.scatter(ti, x[idx], color="royalblue")
+
+            ax_mass.hlines(0, xmin, xmax, color="black")
+            ax_mass.vlines(0, ymin, ymax, color="black", linestyle="dashed")
+            ax_mass.vlines(wall_x, ymin, ymax, color="black")
+
+            _x = x[idx]-mass_width/2.
+        
+            rect = patches.Rectangle((_x, 0.01), 0.08, 0.2, linewidth=1, edgecolor='black', facecolor='none')
+            ax_mass.add_patch(rect)
+
+            if x[idx] >= 0:
+                spring_color = "red"
+            else:
+                spring_color = "blue"
+        
+            ax_mass.hlines(mass_height/2., wall_x, _x, color=spring_color)
+    
+            x_line, = ax_graph.plot(t[:idx+1], x[:idx+1], color="royalblue", label="x")
+            ax_graph.scatter(ti, x[idx], color="royalblue")
+        
+            v_line, = ax_graph.plot(t[:idx+1], v[:idx+1], color="olivedrab", label="v")
+            ax_graph.scatter(ti, v[idx], color="olivedrab")
+        
+            a_line, = ax_graph.plot(t[:idx+1], a[:idx+1], color="orangered", label="a")
+            ax_graph.scatter(ti, a[idx], color="orangered")
+
+            ax_graph.legend(handles=[x_line, v_line, a_line])
+        
             camera.snap()
 
         anim = camera.animate()
@@ -105,7 +152,41 @@ def _(Camera, ROOT, mo, np, plt):
 
 
 @app.cell
-def _():
+def _(mo):
+    mo.md(
+        r"""
+    This is the infamous harmonic osillation. As the mass is displaced from the spring equilibrium position, the restoring force increases. This decelerates the mass till it stops completely and reverse direction and starts accelerating in the other direction. As the mass crosses the equilibrium position, a restoring force kicks in in the other direction and so on.
+
+    As you may imagine, this will continue for eternity if not disturbed, which is not in agreement with our everyday experience of the physical world. Hence, this is an idealization (at least for the macro phenomenon) that lives only in a platonic realm. In reality, in addition to the restoring force, there are also resitive forces, such as friction, whcih interfere with that happening.
+
+    We can add the contribution of resitive force as:
+
+    $$
+    F = -kx - b v
+    $$
+
+    where $b$ is a constant. The resistive force is represented by the second term, which depends on velocity. So, when the object is not moving, it does not experience a resistive force (which is reasonable) and the magnitude of the force will depend on the speed of the object (so higher speed $\rightarrow$ larger resistance).
+
+    Same way, using Newton second law to deduce the equation of motion:
+
+    $$
+    \frac{d^2x}{dt^2} + \frac{b}{m} \frac{dx}{dt} + \frac{k}{m} x = 0 
+    $$
+
+    This is a second-order linear differential equation. One way to solve is using Laplace transform. Laplace transform will transform the differential equation into an algebric equation, which is easier to solve. Then we can use the inverse Laplace transform to get the solution in the time domain.
+
+    $$
+    s^2 X(s) - s x(0) - \dot{x}(0) + \frac{b}{m} (s X(s) - x(0)) + \frac{k}{m} X(s) = 0
+    $$
+
+    Let $\omega_0 = \sqrt{\frac{k}{m}}$ and $\bar{b} = \frac{b}{m}$. By rearranging:
+
+    $$
+    X(s) = \frac{x(0) s + \bar{b} x(0) + \dot{x}(0)}{s^2 + \bar{b} s + \omega_0^2}\\
+    X(s) = \frac{x(0) s + \bar{b} x(0) + \dot{x}(0)}{(s+\frac{\bar{b} - \sqrt{\bar{b}^2-4\omega_0^2}}{2})(s+\frac{\bar{b} + \sqrt{\bar{b}^2-4\omega_0^2}}{2})}
+    $$
+    """
+    )
     return
 
 

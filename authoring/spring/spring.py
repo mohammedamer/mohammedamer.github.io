@@ -18,7 +18,7 @@ def _():
 def _(mo):
     mo.md(
         r"""
-    # On Springs
+    # On Spring Simulation
 
     I would like to investigate some spring physics. First let's consider the one dimensional case. The spring force can be modeled as:
 
@@ -29,19 +29,19 @@ def _(mo):
     where $k$ is the spring constant. Using Newton's second law:
 
     $$
-    \begin{align}
+    \begin{align*}
     F &= ma\\
     ma &= -kx\\
     a &= -\frac{k}{m}x
-    \end{align}
+    \end{align*}
     $$
 
     If we define $\omega^2 = \frac{k}{m}$, then we have:
 
     $$
-    \begin{align}
+    \begin{align*}
     \frac{d^2{x}}{dt^2} = -\omega^2x
-    \end{align}
+    \end{align*}
     $$
 
     which is a second-order differential equation. A solution is:
@@ -233,6 +233,86 @@ def _(Camera, ROOT, mo, np, patches, plt):
         return mo.image(gif_path, width=600)
 
     damped_spring1d()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+    Let's consider simulations in 2D. First, let's assume a mass fixed to ceiling by a spring and free to move in two dimensions under the influence of the spring force and gravity. Let the mass poition be represented by the vector $\textbf{r}$, the fixation point is the origin, gravity acceleration is $\textbf{g} = -g \hat{\textbf{j}}$, where $g = 9.8$, and the unstretched spring length is $l$. Then:
+
+    $$
+    \frac{d^2\textbf{r}}{dt^2} = -\frac{k}{m}(|\textbf{r}| - l) \textbf{r} + \frac{1}{m} \textbf{g}
+    $$
+
+    To solve numerically, we may represent the previous motion equation as:
+
+    $$
+    \begin{align*}
+    |\textbf{r}| &= \sqrt{x^2 + y^2}\\\\
+    \frac{d\textbf{v}}{dt} &= -\frac{k}{m}(|\textbf{r}| - l) \textbf{r} + \frac{1}{m} \textbf{g} \\\\
+    \frac{d\textbf{r}}{dt} &= \textbf{v}
+    \end{align*}
+    $$
+    """
+    )
+    return
+
+
+@app.cell
+def _(Camera, ROOT, mo, np, plt):
+    from scipy.integrate import odeint
+
+    def hanged_spring2d():
+
+        k = 1
+        m = 1
+        g = np.array([0, -9.8])
+
+        l = 1
+
+        r0 = np.array([1, 1.5])
+        v0 = np.array([0, 0.])
+
+        s0 = np.concat((r0, v0))
+    
+        def motion_fn(s, t):
+
+            r0, v0 = s[:2], s[2:]
+        
+            r_abs = np.linalg.norm(r0)
+        
+            dv = -k/m*(r_abs - l)*r0 + 1/m*g
+            dr = v0
+
+            return np.concat([dr, dv])
+    
+        t = np.linspace(0, 10, 100)
+
+        sol = odeint(motion_fn, s0, t)
+
+        fig, (ax_mass, ax_graph) = plt.subplots(1, 2, figsize=(12,5))
+
+        # ax_graph.set_xlim((-1, 1))
+        # ax_graph.set_ylim((-20, 0))
+    
+        camera = Camera(fig)
+
+        for t_idx in range(len(sol)):
+
+            v = sol[:t_idx+1, 2:]
+            ax_graph.plot(v[:, 0], v[:, 1], color="royalblue")
+
+            camera.snap()
+
+        anim = camera.animate()
+
+        gif_path = ROOT / "hanged_spring2d.gif"  
+        anim.save(gif_path, writer="pillow", fps=30)
+        return mo.image(gif_path, width=600)
+
+    hanged_spring2d()
     return
 
 

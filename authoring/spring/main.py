@@ -122,8 +122,9 @@ def _(Camera, ROOT, mo, np, patches, plt):
 
             ax_mass.hlines(mass_height/2., wall_x, _x, color="black")
 
-            x_line, = ax_graph.plot(t[:idx+1], x[:idx+1], color="royalblue", label="x")
+            ax_graph.plot(t[:idx+1], x[:idx+1], color="royalblue", label="x")
             ax_graph.scatter(ti, x[idx], color="royalblue")
+            ax_graph.hlines(0, 0, T, color="black", linestyle="dashed")
 
             camera.snap()
 
@@ -221,8 +222,9 @@ def _(Camera, ROOT, mo, np, patches, plt):
 
             ax_mass.hlines(mass_height/2., wall_x, _x, color="black")
 
-            x_line, = ax_graph.plot(t[:idx+1], x[:idx+1], color="royalblue", label="x")
+            ax_graph.plot(t[:idx+1], x[:idx+1], color="royalblue", label="x")
             ax_graph.scatter(ti, x[idx], color="royalblue")
+            ax_graph.hlines(0, 0, T, color="black", linestyle="dashed")
 
             camera.snap()
 
@@ -263,6 +265,7 @@ def _(mo):
 @app.cell
 def _(Camera, ROOT, mo, np, plt):
     from scipy.integrate import odeint
+    from matplotlib.patches import Circle
 
     def hanged_spring2d():
 
@@ -276,34 +279,41 @@ def _(Camera, ROOT, mo, np, plt):
         v0 = np.array([0, 0.])
 
         s0 = np.concat((r0, v0))
-    
+
         def motion_fn(s, t):
 
             r0, v0 = s[:2], s[2:]
-        
+
             r_abs = np.linalg.norm(r0)
-        
+
             dv = -k/m*(r_abs - l)*r0 + 1/m*g
             dr = v0
 
             return np.concat([dr, dv])
-    
-        t = np.linspace(0, 10, 100)
+
+        t = np.linspace(0, 5, 200)
 
         sol = odeint(motion_fn, s0, t)
 
-        fig, (ax_mass, ax_graph) = plt.subplots(1, 2, figsize=(12,5))
+        fig, ax_mass = plt.subplots(1, 1)
 
-        # ax_graph.set_xlim((-1, 1))
-        # ax_graph.set_ylim((-20, 0))
+        ax_mass.set_xticks([])
+        ax_mass.set_yticks([])
+
+        xmax = np.abs(sol[:,0]).max()
+        ymax = np.abs(sol[:,1]).max()
     
         camera = Camera(fig)
-
+    
         for t_idx in range(len(sol)):
 
-            v = sol[:t_idx+1, 2:]
-            ax_graph.plot(v[:, 0], v[:, 1], color="royalblue")
-
+            x, y = sol[t_idx, :2]
+            ax_mass.scatter(x, y, color="black", s=100)
+            ax_mass.plot(np.array([0, x]), np.array([0, y]), color="black")
+        
+            ax_mass.hlines(0, -xmax, xmax, color="black", linestyle="dashed")
+            ax_mass.vlines(0, -ymax, 0, color="black", linestyle="dashed")
+        
             camera.snap()
 
         anim = camera.animate()

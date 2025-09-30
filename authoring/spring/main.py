@@ -242,10 +242,10 @@ def _(Camera, ROOT, mo, np, patches, plt):
 def _(mo):
     mo.md(
         r"""
-    Let's consider simulations in 2D. First, let's assume a mass fixed to ceiling by a spring and free to move in two dimensions under the influence of the spring force and gravity. Let the mass poition be represented by the vector $\textbf{r}$, the fixation point is the origin, gravity acceleration is $\textbf{g} = -g \hat{\textbf{j}}$, where $g = 9.8$, and the unstretched spring length is $l$. Then:
+    Let's consider simulations in 2D. First, let's assume a mass fixed to ceiling by a spring and free to move in two dimensions under the influence of the spring force and gravity. Let the mass poition be represented by the vector $\textbf{r}$, the fixation point is the origin, gravity acceleration is $\textbf{g} = -g \hat{\textbf{j}}$, where $g = 9.8$, the unstretched spring length is $l$ and $\hat{\textbf{r}}$ is the unit vector in the direction along the spring. Then:
 
     $$
-    \frac{d^2\textbf{r}}{dt^2} = -\frac{k}{m}(|\textbf{r}| - l) \textbf{r} + \frac{1}{m} \textbf{g}
+    \frac{d^2\textbf{r}}{dt^2} = -\frac{k}{m}(|\textbf{r}| - l) \hat{\textbf{r}} + \frac{1}{m} \textbf{g}
     $$
 
     To solve numerically, we may represent the previous motion equation as:
@@ -253,7 +253,7 @@ def _(mo):
     $$
     \begin{align*}
     |\textbf{r}| &= \sqrt{x^2 + y^2}\\\\
-    \frac{d\textbf{v}}{dt} &= -\frac{k}{m}(|\textbf{r}| - l) \textbf{r} + \frac{1}{m} \textbf{g} \\\\
+    \frac{d\textbf{v}}{dt} &= -\frac{k}{m}(|\textbf{r}| - l) \hat{\textbf{r}} + \frac{1}{m} \textbf{g} \\\\
     \frac{d\textbf{r}}{dt} &= \textbf{v}
     \end{align*}
     $$
@@ -275,7 +275,7 @@ def _(Camera, ROOT, mo, np, plt):
 
         l = 1
 
-        r0 = np.array([1, 1.5])
+        r0 = np.array([1, -.5])
         v0 = np.array([0, 0.])
 
         s0 = np.concat((r0, v0))
@@ -286,34 +286,37 @@ def _(Camera, ROOT, mo, np, plt):
 
             r_abs = np.linalg.norm(r0)
 
-            dv = -k/m*(r_abs - l)*r0 + 1/m*g
+            dv = -k/m*(r_abs - l)*r0/r_abs + 1/m*g
             dr = v0
 
             return np.concat([dr, dv])
 
-        t = np.linspace(0, 5, 200)
+        t = np.linspace(0, 20, 200)
 
         sol = odeint(motion_fn, s0, t)
 
-        fig, ax_mass = plt.subplots(1, 1)
+        fig, (ax_mass, ax_graph) = plt.subplots(1, 2, figsize=(12,5))
 
         ax_mass.set_xticks([])
         ax_mass.set_yticks([])
 
         xmax = np.abs(sol[:,0]).max()
         ymax = np.abs(sol[:,1]).max()
-    
+
         camera = Camera(fig)
-    
+
         for t_idx in range(len(sol)):
 
             x, y = sol[t_idx, :2]
             ax_mass.scatter(x, y, color="black", s=100)
             ax_mass.plot(np.array([0, x]), np.array([0, y]), color="black")
-        
+
             ax_mass.hlines(0, -xmax, xmax, color="black", linestyle="dashed")
             ax_mass.vlines(0, -ymax, 0, color="black", linestyle="dashed")
-        
+
+            ax_graph.scatter(x, y, color="royalblue", s=100)
+            ax_graph.plot(sol[:t_idx+1, 0], sol[:t_idx+1, 1], color="royalblue")
+
             camera.snap()
 
         anim = camera.animate()
@@ -323,6 +326,98 @@ def _(Camera, ROOT, mo, np, plt):
         return mo.image(gif_path, width=600)
 
     hanged_spring2d()
+    return (odeint,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+    Let's make this more interesting by including multiple springs. To simplify, let's ignore gravity influence. Let's consider the following arrangment. Mass is at the center of a circle with radius $R$, multiple springs are attached to the mass at one end and to a point on the circle circumference on the other end. Let the spring attach points be $\textbf{r}_i$, the mass position to be $r$ and the unstretched length of any spring to be $R$. Then our equation of motion is:
+
+    $$
+    \frac{d^2\textbf{r}}{dt^2} = \frac{k}{m} \sum_i (R-|\textbf{r} - \textbf{r}_i|)\frac{\textbf{r} - \textbf{r}_i}{|\textbf{r} - \textbf{r}_i|}
+    $$
+
+    and we rewrite for numerical simulation:
+
+    $$
+    \begin{align*}
+    \frac{d\textbf{v}}{dt} &= \frac{k}{m} \sum_i (R-|\textbf{r} - \textbf{r}_i|)\frac{\textbf{r} - \textbf{r}_i}{|\textbf{r} - \textbf{r}_i|}\\\\
+    \frac{d\textbf{r}}{dt} &= \textbf{v}
+    \end{align*}
+    $$
+    """
+    )
+    return
+
+
+@app.cell
+def _(Camera, ROOT, mo, np, odeint, patches, plt):
+    def circle_spring2d():
+
+        k = 1
+        m = 1
+        R = 1
+
+        r0 = np.array([.5, -.5])
+        v0 = np.array([0, 0.])
+
+        s0 = np.concat((r0, v0))
+
+        fix_points = np.array([[R*np.sin(np.deg2rad(theta)), R*np.cos(np.deg2rad(theta))] for theta in [0, 120, 240]])
+
+        def motion_fn(s, t):
+
+            r0, v0 = s[:2], s[2:]
+
+            dv = 0.
+            for ri in fix_points:
+                norm = np.linalg.norm(r0 - ri)
+                dv += (R - norm)*(r0-ri)/norm
+            dv *= k/m
+
+            dr = v0
+
+            return np.concat([dr, dv])
+
+        t = np.linspace(0, 20, 200)
+
+        sol = odeint(motion_fn, s0, t)
+
+        fig, (ax_mass, ax_graph) = plt.subplots(1, 2, figsize=(12,5))
+
+        ax_mass.set_xticks([])
+        ax_mass.set_yticks([])
+
+        ax_mass.set_xlim((-1, 1))
+        ax_mass.set_ylim((-1, 1))
+
+        camera = Camera(fig)
+
+        for t_idx in range(len(sol)):
+
+            x, y = sol[t_idx, :2]
+            ax_mass.scatter(x, y, color="black", s=100)
+
+            circle = patches.Circle(xy=(0, 0), radius=R, linestyle="dashed", fill=False)
+            ax_mass.add_patch(circle)
+
+            for ri in fix_points:
+                ax_mass.plot([x, ri[0]], [y, ri[1]], color="black")
+
+            ax_graph.scatter(x, y, color="royalblue", s=100)
+            ax_graph.plot(sol[:t_idx+1, 0], sol[:t_idx+1, 1], color="royalblue")
+
+            camera.snap()
+
+        anim = camera.animate()
+
+        gif_path = ROOT / "circle_spring2d.gif"  
+        anim.save(gif_path, writer="pillow", fps=30)
+        return mo.image(gif_path, width=600)
+
+    circle_spring2d()
     return
 
 

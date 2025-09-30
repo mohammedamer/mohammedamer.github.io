@@ -421,6 +421,90 @@ def _(Camera, ROOT, mo, np, odeint, patches, plt):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""This can be extended trivially to 3D. The same set of equations apply, just now the vectors are 3D.""")
+    return
+
+
+@app.cell
+def _(Camera, ROOT, mo, np, odeint, plt):
+    def sphere_spring3d():
+
+        k = 1
+        m = 1
+        R = 1
+
+        r0 = np.array([.5, -.1, 0.2])
+        v0 = np.array([0, 0., 0.])
+
+        s0 = np.concat((r0, v0))
+
+        # inclination, azimuth 
+        fix_points_polar_coords = np.array([[45., 0.], [45., 120.], [45, 240.], [180., 0.]])
+
+        fix_points = []
+        for theta, phi in fix_points_polar_coords:
+            x = R*np.sin(np.deg2rad(theta))*np.cos(np.deg2rad(phi))
+            y = R*np.sin(np.deg2rad(theta))*np.sin(np.deg2rad(phi))
+            z = R*np.cos(np.deg2rad(theta))
+
+            fix_points.append([x, y, z])
+
+        fix_points = np.array(fix_points)
+
+        def motion_fn(s, t):
+
+            r0, v0 = s[:3], s[3:]
+
+            dv = 0.
+            for ri in fix_points:
+                norm = np.linalg.norm(r0 - ri)
+                dv += (R - norm)*(r0-ri)/norm
+            dv *= k/m
+
+            dr = v0
+
+            return np.concat([dr, dv])
+
+        t = np.linspace(0, 20, 200)
+
+        sol = odeint(motion_fn, s0, t)
+
+        fig = plt.figure(figsize=(12, 5))
+        ax_mass = fig.add_subplot(1, 2, 1, projection='3d')
+
+        ax_mass.set_xticks([])
+        ax_mass.set_yticks([])
+        ax_mass.set_zticks([])
+    
+        ax_graph = fig.add_subplot(1, 2, 2, projection='3d')
+    
+        camera = Camera(fig)
+
+        for t_idx in range(len(sol)):
+
+            x, y, z = sol[t_idx, :3]
+            ax_mass.scatter(x, y, z, color="black", s=100)
+
+            for ri in fix_points:
+                ax_mass.plot([x, ri[0]], [y, ri[1]], [z, ri[2]], color="black")
+
+            ax_graph.scatter(x, y, z, color="royalblue", s=100)
+            ax_graph.plot(sol[:t_idx+1, 0], sol[:t_idx+1, 1], sol[:t_idx+1, 2], color="royalblue")
+
+            camera.snap()
+
+        anim = camera.animate()
+
+        gif_path = ROOT / "sphere_spring3d.gif"  
+        anim.save(gif_path, writer="pillow", fps=30)
+        return mo.image(gif_path, width=600)
+
+    sphere_spring3d()
+    return
+
+
 @app.cell
 def _():
     return

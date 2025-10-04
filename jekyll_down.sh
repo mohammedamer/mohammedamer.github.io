@@ -1,0 +1,1 @@
+podman compose -f compose.jekyll.yml down

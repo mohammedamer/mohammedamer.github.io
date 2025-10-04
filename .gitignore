@@ -8,6 +8,10 @@ _site
 Thumbs.db
 ehthumbs.db
 
+**/.ipynb_checkpoints
+**/__marimo__
+**/.Trash-0
+
 Gemfile.lock
 
 beautiful-jekyll-theme-*.gem

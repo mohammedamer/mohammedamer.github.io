@@ -32,14 +32,21 @@ def run(article, year, month, day):
         relative = f"{{{{ '{relative}' | relative_url }}}}"
         text = text.replace(m[1], relative)
 
+    asset_path = ROOT / f"assets/{post_name}"
+
+    cover_img = f"/assets/{post_name}/img/cover.png"
+    text = text.replace("{{cover-img}}", f"cover-img: {cover_img}\n"
+                        f"thumbnail-img: {cover_img}\n"
+                        f"share-img: {cover_img}")
+
     with open(article_path, "w") as f:
         f.write(text)
 
     post_path = POSTS/f"{post_name}.md"
     shutil.move(article/"main.md", post_path)
 
-    shutil.copytree(article/"assets", ROOT /
-                    f"assets/{post_name}")
+    shutil.copytree(article/"assets", asset_path)
+    shutil.copy(article/"cover.png", asset_path/"img")
 
     print("Done!")
 

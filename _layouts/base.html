@@ -22,6 +22,17 @@ common-js:
 <!DOCTYPE html>
 <html lang="{{ page.language | default: site.language | default: 'en' }}">
 <!-- Beautiful Jekyll 6.0.1 | Copyright Dean Attali 2023 -->
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: {'[+]': [['$', '$']]}
+    },
+  };
+  </script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js">
+</script>
+
 {% include head.html %}
 
 <body>

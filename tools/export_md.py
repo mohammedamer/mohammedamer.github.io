@@ -35,9 +35,12 @@ def run(article, year, month, day):
     asset_path = ROOT / f"assets/{post_name}"
 
     cover_img = f"/assets/{post_name}/img/cover.png"
-    text = text.replace("{{cover-img}}", f"cover-img: {cover_img}\n"
-                        f"thumbnail-img: {cover_img}\n"
-                        f"share-img: {cover_img}")
+    if os.path.exists(cover_img):
+        text = text.replace("{{cover-img}}", f"cover-img: {cover_img}\n"
+                            f"thumbnail-img: {cover_img}\n"
+                            f"share-img: {cover_img}")
+        
+        shutil.copy(article/"cover.png", asset_path/"img")
 
     with open(article_path, "w") as f:
         f.write(text)
@@ -46,7 +49,6 @@ def run(article, year, month, day):
     shutil.move(article/"main.md", post_path)
 
     shutil.copytree(article/"assets", asset_path)
-    shutil.copy(article/"cover.png", asset_path/"img")
 
     print("Done!")
 

@@ -48,6 +48,9 @@ def run(article, year, month, day):
     post_path = POSTS/f"{post_name}.md"
     shutil.move(article/"main.md", post_path)
 
+    if os.path.exists(asset_path):
+        shutil.rmtree(asset_path)
+
     shutil.copytree(article/"assets", asset_path)
 
     print("Done!")

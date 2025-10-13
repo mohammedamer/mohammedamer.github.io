@@ -22,6 +22,7 @@ author: Mohammed Amer
 navbar-links:
   Home: "index"
   Publications: "publications"
+  Library: "library"
   # About Me: "aboutme"
   # Resources:
   #   - Beautiful Jekyll: "https://beautifuljekyll.com"

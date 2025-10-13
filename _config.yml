@@ -22,6 +22,7 @@ author: Mohammed Amer
 navbar-links:
   Home: "index"
   Publications: "publications"
+  Screen: "screen"
   Library: "library"
   # About Me: "aboutme"
   # Resources:

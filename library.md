@@ -35,6 +35,7 @@ title: Library
 - Artemis. Andy Weir.
 - Project Hail Mary. Andy Weir.
 - Metro 2033. Dmitry Glukhovsky.
+- Prey. Michael Crichton.
 
 # Textbooks
 

@@ -36,6 +36,8 @@ title: Library
 - Project Hail Mary. Andy Weir.
 - Metro 2033. Dmitry Glukhovsky.
 - Prey. Michael Crichton.
+- Children of Ruin. Adrian Tchaikovsky.
+- Children of Time. Adrian Tchaikovsky.
 
 # Textbooks
 
@@ -45,3 +47,4 @@ title: Library
 - Understanding Digital Signal Processing. Richard Lyons.
 - An Introduction to Modern Astrophysics. Bradley Carroll.
 - Mathematical Methods for Physics and Engineering. K Riley.
+- Genetics: Genes, genomes, and evolution. Philip Meneely.

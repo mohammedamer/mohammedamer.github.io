@@ -49,7 +49,7 @@ def show_fig(fig, tag):
 
 
 ```python
-def plot_pend(theta1, theta2, ax=None,):
+def plot_pend(theta1, theta2, ax=None, color="black"):
 
     if ax is None:
         ax = plt.subplot()
@@ -62,16 +62,16 @@ def plot_pend(theta1, theta2, ax=None,):
 
     ax.set_xticks([])
     ax.set_yticks([])
-    
+
     ax.set_xlim((XMIN, XMAX))
     ax.set_ylim((YMIN, YMAX))
 
     ax.hlines(0., xmin=XMIN, xmax=XMAX, color="black", linestyles="dashed")
     ax.vlines(0., ymin=YMIN, ymax=YMAX, color="black", linestyles="dashed")
-    
-    ax.plot([0, x_m1], [0, y_m1], color="black")
-    ax.plot([x_m1, x_m2], [y_m1, y_m2], color="black")
-    ax.scatter([x_m1, x_m2], [y_m1, y_m2], color="black")
+
+    ax.plot([0, x_m1], [0, y_m1], color=color)
+    ax.plot([x_m1, x_m2], [y_m1, y_m2], color=color)
+    ax.scatter([x_m1, x_m2], [y_m1, y_m2], color=color)
 
     fig = ax.get_figure()
     plt.close()
@@ -81,13 +81,13 @@ def plot_pend(theta1, theta2, ax=None,):
 
 
 ```python
-show_fig(plot_pend(theta1=1., theta2=2.), tag="double_pend")
+show_fig(plot_pend(theta1=1., theta2=2.), tag="double_pend",)
 ```
 
 
 
 
-<img src="{{ '/assets/2025-11-6-double_pend/img/double_pend.png' | relative_url }}"/>
+<img src="{{ '/assets/2025-11-7-double_pend/img/double_pend.png' | relative_url }}"/>
 
 
 
@@ -204,6 +204,57 @@ sim_double_pend()
 
 
 
-<img src="{{ '/assets/2025-11-6-double_pend/img/double_pend.gif' | relative_url }}"/>
+<img src="{{ '/assets/2025-11-7-double_pend/img/double_pend.gif' | relative_url }}"/>
+
+
+
+Sensitive dependence on initial conditions.
+
+
+```python
+def sim_double_pend_initial():
+
+    T = 20
+    t = linspace(0, T, 200)
+
+    # theta1, theta2, omega1, omega2
+    s0 = array([[-1., 3.4, 0., 0.],
+                [-1.001, 3.401, 0., 0.],
+                [-1.002, 3.402, 0., 0.]])
+
+    solutions = []
+
+    for inital_condition in s0:
+        solutions.append(odeint(double_pend_step, inital_condition, t))
+
+    colors = ["royalblue", "red", "green"]
+
+    fig, ax = plt.subplots(1, 1)
+
+    camera = Camera(fig)
+
+    for time_idx in range(len(t)):
+        for condition_idx in range(3):
+            theta1, theta2, _, _ = solutions[condition_idx][time_idx]
+            plot_pend(theta1=theta1, theta2=theta2,
+                      ax=ax, color=colors[condition_idx])
+
+        camera.snap()
+
+    anim = camera.animate()
+    plt.close()
+
+    gif_path = ROOT / "double_pend_initial.gif"
+    anim.save(gif_path, writer="pillow", fps=10)
+    return Image(url=gif_path)
+
+
+sim_double_pend_initial()
+```
+
+
+
+
+<img src="{{ '/assets/2025-11-7-double_pend/img/double_pend_initial.gif' | relative_url }}"/>
 
 

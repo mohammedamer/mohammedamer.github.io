@@ -5,6 +5,7 @@ title: Library
 
 # Non-fiction
 
+- What Is Marxism?. Alan Woods.
 - The Magic of Reality: How We Know What's Really True. Richard Dawkins.
 - Black Holes: The Key to Understanding the Universe. Brian Cox.
 - White Holes. Carlo Rovelli.
@@ -26,6 +27,7 @@ title: Library
 
 # Novels
 
+- Rendezvous with Rama. Arthur C. Clarke.
 - The Three-Body Problem. Cixin Liu.
 - The Dark Forest. Cixin Liu.
 - Death's End. Cixin Liu.

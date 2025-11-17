@@ -3,6 +3,8 @@ layout: page
 title: Screen
 ---
 
+- The Long Walk (2025).
+- Forgotten (2017).
 - Alice in Borderland (2020).
 - The Woman in Cabin 10 (2025).
 - A Beautiful Mind (2001).

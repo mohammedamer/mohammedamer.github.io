@@ -11,7 +11,7 @@ ROOT = THIS / ".."
 POSTS = ROOT / "_posts"
 
 
-def run(article, year, month, day):
+def run(article, year, month, day, update):
 
     article = Path(article)
     subprocess.run(["jupyter", "nbconvert", "--to",
@@ -20,7 +20,10 @@ def run(article, year, month, day):
     article_tag = article.name
     article_path = article/"main.md"
 
-    post_name = f"{year}-{month}-{day}-{article_tag}"
+    if update is None:
+        post_name = f"{year}-{month}-{day}-{article_tag}"
+    else:
+        post_name = Path(update).stem
 
     with open(article_path, "r") as f:
         text = f.read()
@@ -33,14 +36,6 @@ def run(article, year, month, day):
         text = text.replace(m[1], relative)
 
     asset_path = ROOT / f"assets/{post_name}"
-
-    cover_img = f"/assets/{post_name}/img/cover.png"
-    if os.path.exists(cover_img):
-        text = text.replace("{{cover-img}}", f"cover-img: {cover_img}\n"
-                            f"thumbnail-img: {cover_img}\n"
-                            f"share-img: {cover_img}")
-        
-        shutil.copy(article/"cover.png", asset_path/"img")
 
     with open(article_path, "w") as f:
         f.write(text)
@@ -62,9 +57,10 @@ if __name__ == "__main__":
         description='export ipynb to markdown')
 
     parser.add_argument('--article', type=str, action='store')
-    parser.add_argument('--year', type=str, action='store')
-    parser.add_argument('--month', type=str, action='store')
-    parser.add_argument('--day', type=str, action='store')
+    parser.add_argument('--year', type=str, action='store', default=None)
+    parser.add_argument('--month', type=str, action='store', default=None)
+    parser.add_argument('--day', type=str, action='store', default=None)
+    parser.add_argument('--update', type=str, action='store', default=None)
 
     args = parser.parse_args()
-    run(args.article, args.year, args.month, args.day)
+    run(args.article, args.year, args.month, args.day, args.update)

@@ -6,6 +6,9 @@ title: Publications
 
 # Articles & Projects
 
+- [OpenFoam & Visualizations](https://github.com/mohammedamer/openfoam)
+- [Audio Visualizations](https://github.com/mohammedamer/audio)
+- [Mathematica Notebooks](https://github.com/mohammedamer/mathematica-notebook)
 - [Evolutionary Computation: A Primer](https://medium.com/@MohammedAmer/evolutionary-computation-a-primer-e3ca6fb0db5c)
 - [Intro to Evolutionary Computation Using DEAP](https://medium.com/data-science/intro-to-evolutionary-computation-using-deap-618ca974b8cb)
 - [Game of Life 3D using CUDA and Cython](https://medium.com/@MohammedAmer/game-of-life-3d-using-cuda-and-cython-132bcb37efa1)

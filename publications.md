@@ -6,6 +6,7 @@ title: Publications
 
 # Articles & Projects
 
+- [Computational Fluid Dynamics](https://github.com/mohammedamer/cfd)
 - [OpenFoam & Visualizations](https://github.com/mohammedamer/openfoam)
 - [Audio Visualizations](https://github.com/mohammedamer/audio)
 - [Mathematica Notebooks](https://github.com/mohammedamer/mathematica-notebook)

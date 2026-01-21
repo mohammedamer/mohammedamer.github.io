@@ -27,6 +27,7 @@ title: Library
 
 # Novels
 
+- Tau Zero. Poul Anderson.
 - Rendezvous with Rama. Arthur C. Clarke.
 - The Three-Body Problem. Cixin Liu.
 - The Dark Forest. Cixin Liu.

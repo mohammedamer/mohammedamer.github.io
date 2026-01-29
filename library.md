@@ -41,6 +41,7 @@ title: Library
 - Prey. Michael Crichton.
 - Children of Ruin. Adrian Tchaikovsky.
 - Children of Time. Adrian Tchaikovsky.
+- Children of Memory. Adrian Tchaikovsky.
 
 # Textbooks
 

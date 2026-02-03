@@ -6,6 +6,7 @@ title: Publications
 
 # Articles & Projects
 
+- [Weather Gadget using MagTag and CircuitPython](https://github.com/mohammedamer/weather-gadget)
 - [Simple File Size CLI Utility in Rust](https://github.com/mohammedamer/size)
 - [Computational Fluid Dynamics](https://github.com/mohammedamer/cfd)
 - [OpenFoam & Visualizations](https://github.com/mohammedamer/openfoam)
